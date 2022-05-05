@@ -13,6 +13,34 @@ public class Mapa {
 
     private  int [][] mapa = new int [10][10];
 
+    public int getCasilla_libre(){
+        return casilla_libre;
+    }
+
+    public int getMuro(){
+        return muro;
+    }
+    public int getInicio(){
+        return inicio;
+    }
+    public int getNave1(){
+        return nave1;
+    }
+    public int getNave2(){
+        return nave2;
+    }
+    public int getItem(){
+        return item;
+    }
+
+    public int getAceite(){
+        return aceite;
+    }
+
+    public int[][] getMapa(){
+        return mapa;
+    }
+
     public void llenarMapa(String path) throws FileNotFoundException{
         File doc = new File(path);
         Scanner obj = new Scanner(doc);

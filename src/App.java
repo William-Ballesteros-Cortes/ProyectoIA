@@ -1,9 +1,12 @@
+import javax.swing.*;
+import java.awt.*;
 
+import static java.awt.Font.PLAIN;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        Mapa mapa = new Mapa();
-
-        mapa.llenarMapa("ProyectoIA\\src\\Prueba1.txt");
+        
+        Ventana ventana = new Ventana();
+        
     }
 }
