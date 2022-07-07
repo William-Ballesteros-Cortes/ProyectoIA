@@ -1,44 +1,91 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 import static java.awt.Font.PLAIN;
 
-public class Ventana extends JFrame {
-    JPanel panel;
+public class Ventana extends JFrame implements ActionListener {
+    JPanel panel, panel2;
+    JScrollPane scroll;
+    JComboBox metodos;
+    JTextArea camino;
+    JButton aplicar;
+    String caminoCorrecto;
     Mapa mapaI;
     MapaCU mapaCUI;
     Laberinto laberinto = new Laberinto();
 
-    public Ventana(Object mapaE, int id) throws FileNotFoundException {
-        laberinto.llenarMapa("src/Prueba1.txt");
-        mapaI = (Mapa) mapaE;
-        mapaI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
-        switch (id) {
-            case 0:
-                mapaCUI = (MapaCU) mapaE;
-                break;
-        }
+    public Ventana() throws FileNotFoundException {
 
+        laberinto.llenarMapa("src/Prueba1.txt");
         initPanel();
+        // initPanel2();
         initPantalla();
     }
 
+    public void inicializarMapas(Object mapaE, int id) {
+
+        
+        switch (id) {
+            case 0:
+                mapaI = (Mapa) mapaE;
+                mapaI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
+                break;
+            case 1:
+                mapaCUI = (MapaCU) mapaE;
+                mapaCUI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
+                break;
+        }
+
+    }
+
     void initPanel() {
+        String[] lista = { "AMPLITUD", "COSTO UNIFORME", "PROFUNDIDAD", "ÁVARA", "A*" };
 
         panel = new JPanel();
         add(panel); // Añado el panel al JFrame
-        panel.setPreferredSize(new Dimension(800, 600)); // Dimensiones del panel
+        panel.setPreferredSize(new Dimension(1000, 750)); // Dimensiones del panel
+        panel.setLocation(0, 0);
+        panel.setLayout(null);
+
+        JLabel etiqueta = new JLabel();
+        etiqueta.setText("SELECCIONE UN MÉTODO DE BÚSQUEDA: ");
+        etiqueta.setBounds(680, 60, 300, 40);
+        panel.add(etiqueta);
+
+        metodos = new JComboBox(lista);
+        metodos.setBounds(740, 100, 150, 30);
+        panel.add(metodos);
+
+        camino = new JTextArea();
+        camino.setEditable(false);
+        panel.add(camino);
+
+        scroll = new JScrollPane(camino, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scroll.setBounds(680, 210, 270, 400);
+        panel.add(scroll);
+
+        aplicar = new JButton();
+        aplicar.setText("BUSCAR SOLUCIÓN");
+        aplicar.setBounds(715, 160, 200, 30);
+        panel.add(aplicar);
+
+        aplicar.addActionListener(this);
 
     }
 
     private void initPantalla() {
 
         setTitle("Ventana");
-        setSize(800, 900);
+        setSize(1000, 750);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
@@ -83,7 +130,7 @@ public class Ventana extends JFrame {
                         hijo.setNaves(aux);
                     }
                     if (hijo.getNaves()[1][0] == 0 || hijo.getNaves()[1][1] == 0) {
-                        
+
                         hijo.setAcumulado(aux3 + 1);
                         hijo.setDevolverse(true);
                         int[][] aux = hijo.getNaves();
@@ -214,6 +261,7 @@ public class Ventana extends JFrame {
                         }
 
                     }
+
                     cola.add(hijo);
                 }
             }
@@ -251,6 +299,7 @@ public class Ventana extends JFrame {
                         }
 
                     }
+
                     cola.add(hijo);
                 }
             }
@@ -288,6 +337,7 @@ public class Ventana extends JFrame {
                         }
 
                     }
+
                     cola.add(hijo);
                 }
             }
@@ -329,23 +379,216 @@ public class Ventana extends JFrame {
 
                 }
             }
-
             cola.remove(0);
         }
 
         int contadorPasos = 0;
+        caminoCorrecto = "Camino encontrado por amplitud: ";
         System.out.println("Eureka");
         for (int[] posiciones : cola.get(0).getMoviJugador()) {
             contadorPasos += 1;
-            System.out.println("Fila: " + posiciones[0] + " Columna: " + posiciones[1]);
+            caminoCorrecto = caminoCorrecto + "\nFila: " + posiciones[0] + " Columna: " + posiciones[1];
         }
-        System.out.println("Pasos: " + contadorPasos);
-        System.out.println(
-                "Items: " + cola.get(0).getContadorItems()[0][0] + " Fila: " + cola.get(0).getContadorItems()[0][1]
-                        + " Columna: " + cola.get(0).getContadorItems()[0][2]);
-        System.out.println(
-                "Items: " + cola.get(0).getContadorItems()[1][0] + " Fila: " + cola.get(0).getContadorItems()[1][1]
-                        + " Columna: " + cola.get(0).getContadorItems()[1][2]);
+        caminoCorrecto = caminoCorrecto + "\nPasos: " + contadorPasos;
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(0).getContadorItems()[0][0] + " Fila: " + cola.get(0).getContadorItems()[0][1]
+                + " Columna: " + cola.get(0).getContadorItems()[0][2];
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(0).getContadorItems()[1][0] + " Fila: " + cola.get(0).getContadorItems()[1][1]
+                + " Columna: " + cola.get(0).getContadorItems()[1][2];
+
+    }
+
+    public void profundidad() throws CloneNotSupportedException {
+        Mapa padre = (Mapa) mapaI;
+        List<Mapa> cola = new ArrayList<Mapa>();
+        cola.add(padre);
+
+        while (true) {
+
+            padre = new Mapa(cola.get(0));
+
+            if (padre.ganar()) {
+                break;
+            }
+            cola.remove(0);
+            Mapa hijo = new Mapa(padre);
+            hijo.moverIzquierda();
+            // auxiliares para encontrar la posicion del ultimo movimiento del padre y del
+            // hijo
+            int aux1 = hijo.getPosUltMov();
+            int aux2 = padre.getPosUltMov();
+            int[][] auxLaberinto = laberinto.getLaberinto();
+
+            if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+                int fila = hijo.getMoviJugador().get(aux1)[0];
+                int columna = hijo.getMoviJugador().get(aux1)[1];
+                if (auxLaberinto[fila][columna] != 1) {
+
+                    if (auxLaberinto[fila][columna] == 5) {
+
+                        if (hijo.getContadorItems()[0][0] == 0) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[0][0] = 1;
+                            aux[0][1] = fila;
+                            aux[0][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        } else {
+                            if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                    (hijo.getContadorItems()[0][2] != columna)) {
+                                hijo.setDevolverse(true);
+                                int[][] aux = hijo.getContadorItems();
+                                aux[1][0] = 2;
+                                aux[1][1] = fila;
+                                aux[1][2] = columna;
+
+                                hijo.setContadorItems(aux);
+                            }
+                        }
+
+                    }
+
+                    Collections.reverse(cola);
+                    cola.add(hijo);
+                    Collections.reverse(cola);
+                }
+            }
+
+            hijo = new Mapa(padre);
+            hijo.moverDerecha();
+            aux1 = hijo.getPosUltMov();
+            aux2 = padre.getPosUltMov();
+            if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+                int fila = hijo.getMoviJugador().get(aux1)[0];
+                int columna = hijo.getMoviJugador().get(aux1)[1];
+                if (auxLaberinto[fila][columna] != 1) {
+
+                    if (auxLaberinto[fila][columna] == 5) {
+
+                        if (hijo.getContadorItems()[0][0] == 0) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[0][0] = 1;
+                            aux[0][1] = fila;
+                            aux[0][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        } else {
+                            if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                    (hijo.getContadorItems()[0][2] != columna)) {
+                                hijo.setDevolverse(true);
+                                int[][] aux = hijo.getContadorItems();
+                                aux[1][0] = 2;
+                                aux[1][1] = fila;
+                                aux[1][2] = columna;
+
+                                hijo.setContadorItems(aux);
+                            }
+                        }
+
+                    }
+                    Collections.reverse(cola);
+                    cola.add(hijo);
+                    Collections.reverse(cola);
+                }
+            }
+
+            hijo = new Mapa(padre);
+            hijo.moverArriba();
+            aux1 = hijo.getPosUltMov();
+            aux2 = padre.getPosUltMov();
+            if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+                int fila = hijo.getMoviJugador().get(aux1)[0];
+                int columna = hijo.getMoviJugador().get(aux1)[1];
+                if (auxLaberinto[fila][columna] != 1) {
+
+                    if (auxLaberinto[fila][columna] == 5) {
+
+                        if (hijo.getContadorItems()[0][0] == 0) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[0][0] = 1;
+                            aux[0][1] = fila;
+                            aux[0][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        } else {
+                            if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                    (hijo.getContadorItems()[0][2] != columna)) {
+                                hijo.setDevolverse(true);
+                                int[][] aux = hijo.getContadorItems();
+                                aux[1][0] = 2;
+                                aux[1][1] = fila;
+                                aux[1][2] = columna;
+
+                                hijo.setContadorItems(aux);
+                            }
+                        }
+
+                    }
+                    Collections.reverse(cola);
+                    cola.add(hijo);
+                    Collections.reverse(cola);
+                }
+            }
+
+            hijo = new Mapa(padre);
+            hijo.moverAbajo();
+            aux1 = hijo.getPosUltMov();
+            aux2 = padre.getPosUltMov();
+            if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+                int fila = hijo.getMoviJugador().get(aux1)[0];
+                int columna = hijo.getMoviJugador().get(aux1)[1];
+                if (auxLaberinto[fila][columna] != 1) {
+
+                    if (auxLaberinto[fila][columna] == 5) {
+
+                        if (hijo.getContadorItems()[0][0] == 0) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[0][0] = 1;
+                            aux[0][1] = fila;
+                            aux[0][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        } else {
+                            if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                    (hijo.getContadorItems()[0][2] != columna)) {
+                                hijo.setDevolverse(true);
+                                int[][] aux = hijo.getContadorItems();
+                                aux[1][0] = 2;
+                                aux[1][1] = fila;
+                                aux[1][2] = columna;
+
+                                hijo.setContadorItems(aux);
+                            }
+                        }
+
+                    }
+                    Collections.reverse(cola);
+                    cola.add(hijo);
+                    Collections.reverse(cola);
+
+                }
+            }
+        }
+
+        int contadorPasos = 0;
+        caminoCorrecto = "Camino encontrado por profundidad:";
+        System.out.println("Eureka");
+        for (int[] posiciones : cola.get(0).getMoviJugador()) {
+            contadorPasos += 1;
+            caminoCorrecto = caminoCorrecto + "\nFila: " + posiciones[0] + " Columna: " + posiciones[1];
+        }
+        caminoCorrecto = caminoCorrecto + "\nPasos: " + contadorPasos;
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(0).getContadorItems()[0][0] + " Fila: " + cola.get(0).getContadorItems()[0][1]
+                + " Columna: " + cola.get(0).getContadorItems()[0][2];
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(0).getContadorItems()[1][0] + " Fila: " + cola.get(0).getContadorItems()[1][1]
+                + " Columna: " + cola.get(0).getContadorItems()[1][2];
 
     }
 
@@ -353,28 +596,28 @@ public class Ventana extends JFrame {
         MapaCU padre = (MapaCU) mapaI;
         List<MapaCU> cola = new ArrayList<MapaCU>();
         cola.add(padre);
-////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////
         MapaCU hijo = new MapaCU(padre);
         hijo.moverIzquierda();
-        cola=procesarMovimientoCU(hijo, padre, cola);
+        cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverIzquierda();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
-//////////////////////////////////////////////////////////////
+
+        padre = cola.get(0);
+        //////////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverArriba();
 
         cola = (procesarMovimientoCU(hijo, padre, cola));
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
 
         hijo = new MapaCU(padre);
         hijo.moverArriba();
@@ -384,43 +627,43 @@ public class Ventana extends JFrame {
 
         /////////////////////////////////////////////
 
-        padre=cola.get(0);
+        padre = cola.get(0);
 
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
 
         /////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
@@ -428,155 +671,156 @@ public class Ventana extends JFrame {
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         ///////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         ///////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         /////////////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
 
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-        
-        padre=cola.get(0);
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
 
-        
-        padre=cola.get(0);
+        padre = cola.get(0);
+        hijo = new MapaCU(padre);
+        hijo.moverDerecha();
+
+        cola = procesarMovimientoCU(hijo, padre, cola);
+        cola.remove(0);
+
+        padre = cola.get(0);
         ////////////////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverIzquierda();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
-        System.out.println("Fila "+ padre.getMoviJugador().get(padre.getPosUltMov())[0]+ " Columna "+ padre.getMoviJugador().get(padre.getPosUltMov())[1]);
+        System.out.println("Fila " + padre.getMoviJugador().get(padre.getPosUltMov())[0] + " Columna "
+                + padre.getMoviJugador().get(padre.getPosUltMov())[1]);
         System.out.println("Encontre el problema Naves: " + padre.getNaves()[0][1]);
-        System.out.println("Fila "+ hijo.getMoviJugador().get(hijo.getPosUltMov())[0]+ " Columna "+ hijo.getMoviJugador().get(hijo.getPosUltMov())[1]);
+        System.out.println("Fila " + hijo.getMoviJugador().get(hijo.getPosUltMov())[0] + " Columna "
+                + hijo.getMoviJugador().get(hijo.getPosUltMov())[1]);
         System.out.println("Encontre el problema Naves: " + hijo.getNaves()[0][1]);
-        
+
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         ///////////////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         /////////////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverIzquierda();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverIzquierda();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverIzquierda();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         ////////////////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverAbajo();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         /////////////////////////////////////////////////////////////////////
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
         cola = procesarMovimientoCU(hijo, padre, cola);
         cola.remove(0);
-        
-        padre=cola.get(0);
+
+        padre = cola.get(0);
         hijo = new MapaCU(padre);
         hijo.moverDerecha();
 
@@ -584,35 +828,37 @@ public class Ventana extends JFrame {
         cola.remove(0);
 
         System.out.println("Eureka");
-        for (int[] posiciones : cola.get(cola.size()-1).getMoviJugador()) {
+        for (int[] posiciones : cola.get(cola.size() - 1).getMoviJugador()) {
             System.out.println("Fila: " + posiciones[0] + " Columna: " + posiciones[1]);
         }
 
-        for (String moviString : cola.get(cola.size()-1).getDireccion()) {
+        for (String moviString : cola.get(cola.size() - 1).getDireccion()) {
             System.out.println(" " + moviString);
         }
-        System.out.println("Peso: " + cola.get(cola.size()-1).getAcumulado());
+        System.out.println("Peso: " + cola.get(cola.size() - 1).getAcumulado());
         System.out.println(
-                "Naves: " + cola.get(cola.size()-1).getNaves()[0][0] + " Fila: "
-                        + cola.get(cola.size()-1).getNaves()[0][2]
-                        + " Columna: " + cola.get(cola.size()-1).getNaves()[0][3]);
+                "Naves: " + cola.get(cola.size() - 1).getNaves()[0][0] + " Fila: "
+                        + cola.get(cola.size() - 1).getNaves()[0][2]
+                        + " Columna: " + cola.get(cola.size() - 1).getNaves()[0][3]);
 
         System.out.println(
-                "Items: " + cola.get(cola.size()-1).getContadorItems()[0][0] + " Fila: "
-                        + cola.get(cola.size()-1).getContadorItems()[0][1]
-                        + " Columna: " + cola.get(cola.size()-1).getContadorItems()[0][2]);
+                "Items: " + cola.get(cola.size() - 1).getContadorItems()[0][0] + " Fila: "
+                        + cola.get(cola.size() - 1).getContadorItems()[0][1]
+                        + " Columna: " + cola.get(cola.size() - 1).getContadorItems()[0][2]);
         System.out.println(
-                "Items: " + cola.get(cola.size()-1).getContadorItems()[1][0] + " Fila: "
-                        + cola.get(cola.size()-1).getContadorItems()[1][1]
-                        + " Columna: " + cola.get(cola.size()-1).getContadorItems()[1][2]);
-        
+                "Items: " + cola.get(cola.size() - 1).getContadorItems()[1][0] + " Fila: "
+                        + cola.get(cola.size() - 1).getContadorItems()[1][1]
+                        + " Columna: " + cola.get(cola.size() - 1).getContadorItems()[1][2]);
+
     }
 
     public void costoUniforme() throws CloneNotSupportedException {
-        MapaCU padre = (MapaCU) mapaI;
+        MapaCU padre = (MapaCU) mapaCUI;
         List<MapaCU> cola = new ArrayList<MapaCU>();
         int posMenorCostoFinal = 0;
         cola.add(padre);
+
+        System.out.println("hola mundo");
 
         while (true) {
             int posMenorCosto = 0;
@@ -666,27 +912,29 @@ public class Ventana extends JFrame {
         }
 
         System.out.println("Eureka");
+        caminoCorrecto = "Camino encontrado por costo uniforme:";
         for (int[] posiciones : cola.get(posMenorCostoFinal).getMoviJugador()) {
-            System.out.println("Fila: " + posiciones[0] + " Columna: " + posiciones[1]);
+            caminoCorrecto = caminoCorrecto + "\nFila: " + posiciones[0] + " Columna: " + posiciones[1];
         }
 
         for (String moviString : cola.get(posMenorCostoFinal).getDireccion()) {
             System.out.println(" " + moviString);
         }
-        System.out.println("Peso: " + cola.get(posMenorCostoFinal).getAcumulado());
-        System.out.println(
-                "Naves: " + cola.get(posMenorCostoFinal).getNaves()[0][0] + " Combustible " + cola.get(posMenorCostoFinal).getNaves()[0][1] + " Fila: "
+        caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(posMenorCostoFinal).getAcumulado();
+        caminoCorrecto = caminoCorrecto +
+                "\nNaves: " + cola.get(posMenorCostoFinal).getNaves()[0][0] + " Combustible "
+                        + cola.get(posMenorCostoFinal).getNaves()[0][1] + " Fila: "
                         + cola.get(posMenorCostoFinal).getNaves()[0][2]
-                        + " Columna: " + cola.get(posMenorCostoFinal).getNaves()[0][3]);
+                        + " Columna: " + cola.get(posMenorCostoFinal).getNaves()[0][3];
 
-        System.out.println(
-                "Items: " + cola.get(posMenorCostoFinal).getContadorItems()[0][0] + " Fila: "
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(posMenorCostoFinal).getContadorItems()[0][0] + " Fila: "
                         + cola.get(posMenorCostoFinal).getContadorItems()[0][1]
-                        + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[0][2]);
-        System.out.println(
-                "Items: " + cola.get(posMenorCostoFinal).getContadorItems()[1][0] + " Fila: "
+                        + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[0][2];
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(posMenorCostoFinal).getContadorItems()[1][0] + " Fila: "
                         + cola.get(posMenorCostoFinal).getContadorItems()[1][1]
-                        + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[1][2]);
+                        + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[1][2];
 
     }
 
@@ -762,6 +1010,66 @@ public class Ventana extends JFrame {
             }
             x = 30;
             y = y + 60;
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
+        String metodo = (String) metodos.getSelectedItem();
+        if (e.getSource() == aplicar) {
+            if (metodo == "AMPLITUD") {
+                camino.setText("");
+                try {
+                    Mapa mapa = new Mapa(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>());
+                    this.inicializarMapas(mapa, 0);
+                    this.amplitud();
+                    camino.setText(caminoCorrecto);
+                } catch (CloneNotSupportedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+
+            if (metodo == "PROFUNDIDAD") {
+                camino.setText("");
+                try {
+                    Mapa mapa = new Mapa(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>());
+                    this.inicializarMapas(mapa, 0);
+                    this.profundidad();
+                    camino.setText(caminoCorrecto);
+                } catch (CloneNotSupportedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+
+            if (metodo == "PROFUNDIDAD") {
+                camino.setText("");
+                try {
+                    Mapa mapa = new Mapa(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>());
+                    this.inicializarMapas(mapa, 0);
+                    this.profundidad();
+                    camino.setText(caminoCorrecto);
+                } catch (CloneNotSupportedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+
+            if (metodo == "COSTO UNIFORME") {
+                camino.setText("");
+                try {
+                    MapaCU mapa = new MapaCU(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>(),0, new int[2][4]);
+                    this.inicializarMapas(mapa, 1);
+                    this.costoUniforme();
+                    camino.setText(caminoCorrecto);
+                } catch (CloneNotSupportedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+
         }
     }
 
