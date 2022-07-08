@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class Laberinto {
     private int[] posInicio;
     private int[][] laberinto = new int[10][10];
+    private int[] arregloPosiciones;
 
 
     public int[][] getLaberinto (){
@@ -13,6 +14,36 @@ public class Laberinto {
 
     public int[] getPosInicio(){
         return posInicio;
+    }
+
+    public int[] getitemPosiciones() {
+        return arregloPosiciones;
+    }
+
+    public void itemPos(String path) throws FileNotFoundException{
+        arregloPosiciones = new int[2];
+        File doc = new File(path);
+        Scanner obj = new Scanner(doc);
+        int fila = 0;
+        while(obj.hasNextLine()) {
+            int columna = 0;
+            String aux = obj.nextLine();
+            String[] casillas = aux.split(" ");
+            for (String casilla : casillas) {
+                if (Integer.parseInt(casilla) == 5) {
+                    int[] aux2 = new int[4];
+                    int a = 0;
+                    int b = 1;
+                    aux2[a] = fila;
+                    aux2[b] = columna;
+                    arregloPosiciones = aux2;
+                    a++;
+                    b++;
+                }
+                columna++;
+            }
+            fila++;
+        }
     }
 
     public void llenarMapa(String path) throws FileNotFoundException {

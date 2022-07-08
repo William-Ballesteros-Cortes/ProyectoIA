@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +13,14 @@ public class Ventana extends JFrame {
     Mapa mapaI;
     MapaCU mapaCUI;
     Laberinto laberinto = new Laberinto();
+    //Archivo auxiliar para cargar el laberinto
+    File testFile = new File("");
 
     public Ventana(Object mapaE, int id) throws FileNotFoundException {
-        laberinto.llenarMapa("src/Prueba1.txt");
+        //Este codigo trae el camino absoluto hasta la carpet src y luego concatena la posicion del archivo
+        String testPath = testFile.getAbsolutePath();
+        laberinto.llenarMapa(testPath.concat("\\Prueba1.txt"));
+
         mapaI = (Mapa) mapaE;
         mapaI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
         switch (id) {
@@ -688,6 +694,16 @@ public class Ventana extends JFrame {
                         + cola.get(posMenorCostoFinal).getContadorItems()[1][1]
                         + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[1][2]);
 
+    }
+
+    public void procesarMovimientoAvaro() {
+        
+    }
+
+    public void busquedaAvara() throws CloneNotSupportedException{
+        MapaAvaro padre = (MapaAvaro) mapaI;
+        int distHeuristica = 0;
+        
     }
 
     public void paint(Graphics g) {
