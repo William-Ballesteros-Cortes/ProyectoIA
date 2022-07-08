@@ -37,8 +37,8 @@ public class Laberinto {
                     aux2[a] = fila;
                     aux2[b] = columna;
                     arregloPosiciones = aux2;
-                    a++;
-                    b++;
+                    a = 2;
+                    b = 3;
                 }
                 columna++;
             }
