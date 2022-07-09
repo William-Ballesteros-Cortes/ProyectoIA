@@ -1,10 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Laberinto {
     private int[] posInicio;
     private int[][] laberinto = new int[10][10];
+    private List<int[]> posItems = new ArrayList<int[]>();
 
 
     public int[][] getLaberinto (){
@@ -13,6 +16,10 @@ public class Laberinto {
 
     public int[] getPosInicio(){
         return posInicio;
+    }
+
+    public List<int[]> getPosItems(){
+        return posItems;
     }
 
     public void llenarMapa(String path) throws FileNotFoundException {
@@ -30,6 +37,12 @@ public class Laberinto {
                     aux2[1] = columna;
                     posInicio = aux2;
 
+                }
+                if (Integer.parseInt(casilla) == 5) {
+                    int[] aux3 = new int[2];
+                    aux3[0] = fila;
+                    aux3[1] = columna;
+                    posItems.add(aux3);
                 }
                 laberinto[fila][columna] = Integer.parseInt(casilla);
                 columna++;

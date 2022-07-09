@@ -20,6 +20,7 @@ public class Ventana extends JFrame implements ActionListener {
     String caminoCorrecto;
     Mapa mapaI;
     MapaCU mapaCUI;
+    MapaA mapaAI;
     Laberinto laberinto = new Laberinto();
 
     public Ventana() throws FileNotFoundException {
@@ -32,7 +33,6 @@ public class Ventana extends JFrame implements ActionListener {
 
     public void inicializarMapas(Object mapaE, int id) {
 
-        
         switch (id) {
             case 0:
                 mapaI = (Mapa) mapaE;
@@ -206,6 +206,7 @@ public class Ventana extends JFrame implements ActionListener {
                     }
 
                 }
+
                 auxCola.add(hijo);
             }
         }
@@ -592,264 +593,206 @@ public class Ventana extends JFrame implements ActionListener {
 
     }
 
-    public void prueba() {
-        MapaCU padre = (MapaCU) mapaI;
-        List<MapaCU> cola = new ArrayList<MapaCU>();
+    public void a_asterisco() {
+        MapaA padre = (MapaA) mapaAI;
+        List<MapaA> cola = new ArrayList<MapaA>();
+        int posMenorFnFinal = 0;
         cola.add(padre);
-        ////////////////////////////////////////////////////////////
-        MapaCU hijo = new MapaCU(padre);
-        hijo.moverIzquierda();
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
 
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverIzquierda();
+        while (true) {
+            int posMenorFn = 0;
+            int menorFn = cola.get(0).getFn();
 
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
+            for (int x = 0; x < cola.size(); x++) {
+                if (cola.get(x).getFn() < menorFn) {
+                    posMenorFn = x;
+                    menorFn = cola.get(x).getFn();
+                }
+            }
 
-        padre = cola.get(0);
-        //////////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverArriba();
+            padre = new MapaA(cola.get(posMenorFn));
 
-        cola = (procesarMovimientoCU(hijo, padre, cola));
-        cola.remove(0);
+            if (padre.ganar()) {
+                posMenorFnFinal = posMenorFn;
+                break;
+            }
 
-        padre = cola.get(0);
+            // movimiento hacia la izquiera
 
-        hijo = new MapaCU(padre);
-        hijo.moverArriba();
+            MapaA hijo = new MapaA(padre);
+            hijo.moverIzquierda();
 
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
+            cola = procesarMovimientoA(hijo, padre, cola);
 
-        /////////////////////////////////////////////
+            // -------------------------------------------------------------------------------
 
-        padre = cola.get(0);
+            // movimiento hacia la derecha
+            hijo = new MapaA(padre);
+            hijo.moverDerecha();
 
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
+            cola = procesarMovimientoA(hijo, padre, cola);
 
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
+            // -----------------------------------------------------------------------------
 
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
+            // movimiento hacia arriba
+            hijo = new MapaA(padre);
+            hijo.moverArriba();
 
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
+            cola = procesarMovimientoA(hijo, padre, cola);
+            // ----------------------------------------------------------------------------
 
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
+            // movimiento hacia abajo
+            hijo = new MapaA(padre);
+            hijo.moverAbajo();
 
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
+            cola = procesarMovimientoA(hijo, padre, cola);
+            // -----------------------------------------------------------------------------
+            cola.remove(posMenorFn);
 
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-
-        /////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        ///////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        ///////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        /////////////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        ////////////////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverIzquierda();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        System.out.println("Fila " + padre.getMoviJugador().get(padre.getPosUltMov())[0] + " Columna "
-                + padre.getMoviJugador().get(padre.getPosUltMov())[1]);
-        System.out.println("Encontre el problema Naves: " + padre.getNaves()[0][1]);
-        System.out.println("Fila " + hijo.getMoviJugador().get(hijo.getPosUltMov())[0] + " Columna "
-                + hijo.getMoviJugador().get(hijo.getPosUltMov())[1]);
-        System.out.println("Encontre el problema Naves: " + hijo.getNaves()[0][1]);
-
-        cola.remove(0);
-
-        padre = cola.get(0);
-        ///////////////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        /////////////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverIzquierda();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverIzquierda();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverIzquierda();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        ////////////////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverAbajo();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        /////////////////////////////////////////////////////////////////////
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        padre = cola.get(0);
-        hijo = new MapaCU(padre);
-        hijo.moverDerecha();
-
-        cola = procesarMovimientoCU(hijo, padre, cola);
-        cola.remove(0);
-
-        System.out.println("Eureka");
-        for (int[] posiciones : cola.get(cola.size() - 1).getMoviJugador()) {
-            System.out.println("Fila: " + posiciones[0] + " Columna: " + posiciones[1]);
         }
 
-        for (String moviString : cola.get(cola.size() - 1).getDireccion()) {
-            System.out.println(" " + moviString);
+    }
+
+    public List<MapaA> procesarMovimientoA(MapaA hijo, MapaA padre, List<MapaA> cola) {
+        List<MapaA> auxCola = new ArrayList<MapaA>();
+        auxCola.addAll(cola);
+        int aux1 = hijo.getPosUltMov();
+        int aux2 = padre.getPosUltMov();
+        int aux3 = hijo.getFn();
+        int[][] auxLaberinto = laberinto.getLaberinto();
+        if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+            int fila = hijo.getMoviJugador().get(aux1)[0];
+            int columna = hijo.getMoviJugador().get(aux1)[1];
+            if (auxLaberinto[fila][columna] != 1) {
+                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    hijo.setAcumulado(aux3 + 1);
+                }
+                if (auxLaberinto[fila][columna] == 3 && hijo.getNaves()[0][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][0] == 0 || hijo.getNaves()[1][1] == 0) {
+
+                        hijo.setAcumulado(aux3 + 1);
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[0][0] = 1;
+                        aux[0][1] = 10;
+                        aux[0][2] = fila;
+                        aux[0][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 4 && hijo.getNaves()[1][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[0][0] == 0 || hijo.getNaves()[0][1] == 0) {
+                        hijo.setAcumulado(aux3 + 1);
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[1][0] = 2;
+                        aux[1][1] = 20;
+                        aux[1][2] = fila;
+                        aux[1][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 6) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        hijo.setAcumulado(aux3 + 1);
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        hijo.setAcumulado(aux3 + 1);
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] == 0 && hijo.getNaves()[0][1] == 0) {
+                        hijo.setAcumulado(aux3 + 4);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 5) {
+
+                    if (hijo.getContadorItems()[0][0] == 0) {
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getContadorItems();
+                        aux[0][0] = 1;
+                        aux[0][1] = fila;
+                        aux[0][2] = columna;
+                        hijo.setContadorItems(aux);
+                    } else {
+                        if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                (hijo.getContadorItems()[0][2] != columna)) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[1][0] = 2;
+                            aux[1][1] = fila;
+                            aux[1][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        }
+                    }
+
+                }
+                int[] posJugador = hijo.getMoviJugador().get(aux1);
+                int dA = Math.abs(posJugador[0] - laberinto.getPosItems().get(0)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(0)[1]);
+
+                int dB = Math.abs(posJugador[0] - laberinto.getPosItems().get(1)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(1)[1]);
+    
+                int[][] aux = hijo.getContadorItems();
+                if (aux[0][0] == 0 && aux[1][0] == 0) {
+
+                    int dOcercano = 0;
+                    if (dA < dB) {
+                        dOcercano = dA;
+                    } else {
+                        dOcercano = dB;
+                    }
+
+                    int dAB = Math.abs(laberinto.getPosItems().get(0)[0] - laberinto.getPosItems().get(1)[0])
+                            + Math.abs(laberinto.getPosItems().get(0)[1] - laberinto.getPosItems().get(1)[1]);
+                    hijo.setHeuristica(dOcercano + dAB);
+                    hijo.setFn();
+                }
+
+                auxCola.add(hijo);
+            }
         }
-        System.out.println("Peso: " + cola.get(cola.size() - 1).getAcumulado());
-        System.out.println(
-                "Naves: " + cola.get(cola.size() - 1).getNaves()[0][0] + " Fila: "
-                        + cola.get(cola.size() - 1).getNaves()[0][2]
-                        + " Columna: " + cola.get(cola.size() - 1).getNaves()[0][3]);
 
-        System.out.println(
-                "Items: " + cola.get(cola.size() - 1).getContadorItems()[0][0] + " Fila: "
-                        + cola.get(cola.size() - 1).getContadorItems()[0][1]
-                        + " Columna: " + cola.get(cola.size() - 1).getContadorItems()[0][2]);
-        System.out.println(
-                "Items: " + cola.get(cola.size() - 1).getContadorItems()[1][0] + " Fila: "
-                        + cola.get(cola.size() - 1).getContadorItems()[1][1]
-                        + " Columna: " + cola.get(cola.size() - 1).getContadorItems()[1][2]);
-
+        return auxCola;
     }
 
     public void costoUniforme() throws CloneNotSupportedException {
@@ -857,8 +800,6 @@ public class Ventana extends JFrame implements ActionListener {
         List<MapaCU> cola = new ArrayList<MapaCU>();
         int posMenorCostoFinal = 0;
         cola.add(padre);
-
-        System.out.println("hola mundo");
 
         while (true) {
             int posMenorCosto = 0;
@@ -923,18 +864,18 @@ public class Ventana extends JFrame implements ActionListener {
         caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(posMenorCostoFinal).getAcumulado();
         caminoCorrecto = caminoCorrecto +
                 "\nNaves: " + cola.get(posMenorCostoFinal).getNaves()[0][0] + " Combustible "
-                        + cola.get(posMenorCostoFinal).getNaves()[0][1] + " Fila: "
-                        + cola.get(posMenorCostoFinal).getNaves()[0][2]
-                        + " Columna: " + cola.get(posMenorCostoFinal).getNaves()[0][3];
+                + cola.get(posMenorCostoFinal).getNaves()[0][1] + " Fila: "
+                + cola.get(posMenorCostoFinal).getNaves()[0][2]
+                + " Columna: " + cola.get(posMenorCostoFinal).getNaves()[0][3];
 
         caminoCorrecto = caminoCorrecto +
                 "\nItems: " + cola.get(posMenorCostoFinal).getContadorItems()[0][0] + " Fila: "
-                        + cola.get(posMenorCostoFinal).getContadorItems()[0][1]
-                        + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[0][2];
+                + cola.get(posMenorCostoFinal).getContadorItems()[0][1]
+                + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[0][2];
         caminoCorrecto = caminoCorrecto +
                 "\nItems: " + cola.get(posMenorCostoFinal).getContadorItems()[1][0] + " Fila: "
-                        + cola.get(posMenorCostoFinal).getContadorItems()[1][1]
-                        + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[1][2];
+                + cola.get(posMenorCostoFinal).getContadorItems()[1][1]
+                + " Columna: " + cola.get(posMenorCostoFinal).getContadorItems()[1][2];
 
     }
 
@@ -1021,7 +962,7 @@ public class Ventana extends JFrame implements ActionListener {
             if (metodo == "AMPLITUD") {
                 camino.setText("");
                 try {
-                    Mapa mapa = new Mapa(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>());
+                    Mapa mapa = new Mapa(new int[2][3], false, new ArrayList<int[]>(), new ArrayList<String>());
                     this.inicializarMapas(mapa, 0);
                     this.amplitud();
                     camino.setText(caminoCorrecto);
@@ -1034,7 +975,7 @@ public class Ventana extends JFrame implements ActionListener {
             if (metodo == "PROFUNDIDAD") {
                 camino.setText("");
                 try {
-                    Mapa mapa = new Mapa(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>());
+                    Mapa mapa = new Mapa(new int[2][3], false, new ArrayList<int[]>(), new ArrayList<String>());
                     this.inicializarMapas(mapa, 0);
                     this.profundidad();
                     camino.setText(caminoCorrecto);
@@ -1047,7 +988,7 @@ public class Ventana extends JFrame implements ActionListener {
             if (metodo == "PROFUNDIDAD") {
                 camino.setText("");
                 try {
-                    Mapa mapa = new Mapa(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>());
+                    Mapa mapa = new Mapa(new int[2][3], false, new ArrayList<int[]>(), new ArrayList<String>());
                     this.inicializarMapas(mapa, 0);
                     this.profundidad();
                     camino.setText(caminoCorrecto);
@@ -1060,7 +1001,8 @@ public class Ventana extends JFrame implements ActionListener {
             if (metodo == "COSTO UNIFORME") {
                 camino.setText("");
                 try {
-                    MapaCU mapa = new MapaCU(new int[2][3], false ,new ArrayList<int[]>(), new ArrayList<String>(),0, new int[2][4]);
+                    MapaCU mapa = new MapaCU(new int[2][3], false, new ArrayList<int[]>(), new ArrayList<String>(), 0,
+                            new int[2][4]);
                     this.inicializarMapas(mapa, 1);
                     this.costoUniforme();
                     camino.setText(caminoCorrecto);
