@@ -25,7 +25,7 @@ public class Ventana extends JFrame implements ActionListener {
 
     public Ventana() throws FileNotFoundException {
 
-        laberinto.llenarMapa("src/Prueba1.txt");
+        laberinto.llenarMapa("ProyectoIA/src/Prueba1.txt");
         initPanel();
         // initPanel2();
         initPantalla();
@@ -41,6 +41,10 @@ public class Ventana extends JFrame implements ActionListener {
             case 1:
                 mapaCUI = (MapaCU) mapaE;
                 mapaCUI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
+                break;
+            case 2:
+                mapaAI = (MapaA) mapaE;
+                mapaAI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
                 break;
         }
 
@@ -206,6 +210,7 @@ public class Ventana extends JFrame implements ActionListener {
                     }
 
                 }
+                
 
                 auxCola.add(hijo);
             }
@@ -593,6 +598,57 @@ public class Ventana extends JFrame implements ActionListener {
 
     }
 
+
+    public void prueba(){
+        MapaA padre = (MapaA) mapaAI;
+        List<MapaA> cola = new ArrayList<MapaA>();
+        cola.add(padre);
+
+        MapaA hijo = new MapaA(padre);
+        hijo.moverDerecha();
+
+        cola = procesarMovimientoA(hijo, padre, cola);
+
+        MapaA hijo2 = new MapaA(cola.get(1));
+
+        
+        hijo2.moverDerecha();
+
+        cola = procesarMovimientoA(hijo2, padre, cola);
+        
+
+        MapaA hijo3 = new MapaA(cola.get(2));
+
+        hijo3.moverDerecha();
+
+        cola = procesarMovimientoA(hijo3, padre, cola);
+
+        System.out.println("Eureka");
+        caminoCorrecto = "Camino encontrado por A*:";
+        for (int[] posiciones : cola.get(3).getMoviJugador()) {
+            caminoCorrecto = caminoCorrecto + "\nFila: " + posiciones[0] + " Columna: " + posiciones[1];
+        }
+        for (int fn : cola.get(3).getFnList()) {
+            caminoCorrecto = caminoCorrecto + "\nFn: " + fn;
+        }
+        caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(3).getAcumulado();
+        caminoCorrecto = caminoCorrecto +
+                "\nNaves: " + cola.get(3).getNaves()[0][0] + " Combustible "
+                + cola.get(3).getNaves()[0][1] + " Fila: "
+                + cola.get(3).getNaves()[0][2]
+                + " Columna: " + cola.get(3).getNaves()[0][3];
+
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(3).getContadorItems()[0][0] + " Fila: "
+                + cola.get(3).getContadorItems()[0][1]
+                + " Columna: " + cola.get(3).getContadorItems()[0][2];
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(3).getContadorItems()[1][0] + " Fila: "
+                + cola.get(3).getContadorItems()[1][1]
+                + " Columna: " + cola.get(3).getContadorItems()[1][2];
+    }
+
+
     public void a_asterisco() {
         MapaA padre = (MapaA) mapaAI;
         List<MapaA> cola = new ArrayList<MapaA>();
@@ -601,7 +657,9 @@ public class Ventana extends JFrame implements ActionListener {
 
         while (true) {
             int posMenorFn = 0;
+            
             int menorFn = cola.get(0).getFn();
+            
 
             for (int x = 0; x < cola.size(); x++) {
                 if (cola.get(x).getFn() < menorFn) {
@@ -651,14 +709,42 @@ public class Ventana extends JFrame implements ActionListener {
 
         }
 
+        System.out.println("Eureka");
+        caminoCorrecto = "Camino encontrado por A*:";
+        for (int[] posiciones : cola.get(posMenorFnFinal).getMoviJugador()) {
+            caminoCorrecto = caminoCorrecto + "\nFila: " + posiciones[0] + " Columna: " + posiciones[1];
+        }
+        for (int fn : cola.get(posMenorFnFinal).getFnList()) {
+            caminoCorrecto = caminoCorrecto + "\nFn: " + fn;
+        }
+        
+        caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(posMenorFnFinal).getAcumulado();
+        caminoCorrecto = caminoCorrecto +
+                "\nNaves: " + cola.get(posMenorFnFinal).getNaves()[0][0] + " Combustible "
+                + cola.get(posMenorFnFinal).getNaves()[0][1] + " Fila: "
+                + cola.get(posMenorFnFinal).getNaves()[0][2]
+                + " Columna: " + cola.get(posMenorFnFinal).getNaves()[0][3];
+
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(posMenorFnFinal).getContadorItems()[0][0] + " Fila: "
+                + cola.get(posMenorFnFinal).getContadorItems()[0][1]
+                + " Columna: " + cola.get(posMenorFnFinal).getContadorItems()[0][2];
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(posMenorFnFinal).getContadorItems()[1][0] + " Fila: "
+                + cola.get(posMenorFnFinal).getContadorItems()[1][1]
+                + " Columna: " + cola.get(posMenorFnFinal).getContadorItems()[1][2];
+
     }
 
     public List<MapaA> procesarMovimientoA(MapaA hijo, MapaA padre, List<MapaA> cola) {
+        
         List<MapaA> auxCola = new ArrayList<MapaA>();
         auxCola.addAll(cola);
         int aux1 = hijo.getPosUltMov();
         int aux2 = padre.getPosUltMov();
-        int aux3 = hijo.getFn();
+        int aux3 = hijo.getAcumulado();
+        
+        
         int[][] auxLaberinto = laberinto.getLaberinto();
         if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
             int fila = hijo.getMoviJugador().get(aux1)[0];
@@ -771,8 +857,9 @@ public class Ventana extends JFrame implements ActionListener {
 
                 int dB = Math.abs(posJugador[0] - laberinto.getPosItems().get(1)[0])
                         + Math.abs(posJugador[1] - laberinto.getPosItems().get(1)[1]);
-    
+
                 int[][] aux = hijo.getContadorItems();
+                
                 if (aux[0][0] == 0 && aux[1][0] == 0) {
 
                     int dOcercano = 0;
@@ -781,12 +868,25 @@ public class Ventana extends JFrame implements ActionListener {
                     } else {
                         dOcercano = dB;
                     }
+                    
 
                     int dAB = Math.abs(laberinto.getPosItems().get(0)[0] - laberinto.getPosItems().get(1)[0])
                             + Math.abs(laberinto.getPosItems().get(0)[1] - laberinto.getPosItems().get(1)[1]);
+
+
                     hijo.setHeuristica(dOcercano + dAB);
-                    hijo.setFn();
+                } else {
+                    if (aux[0][1] == laberinto.getPosItems().get(0)[0]
+                            && aux[0][2] == laberinto.getPosItems().get(0)[1]) {
+                        hijo.setHeuristica(dB);
+                    }
+                    if (aux[0][1] == laberinto.getPosItems().get(1)[0]
+                            && aux[0][2] == laberinto.getPosItems().get(1)[1]) {
+                        hijo.setHeuristica(dA);
+                    }
                 }
+                System.out.println("entra " + hijo.getAcumulado());
+                hijo.setFn();
 
                 auxCola.add(hijo);
             }
@@ -1010,6 +1110,17 @@ public class Ventana extends JFrame implements ActionListener {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
+            }
+
+            if (metodo == "A*") {
+                camino.setText("");
+
+                MapaA mapa = new MapaA(new int[2][3], false, new ArrayList<int[]>(), new ArrayList<String>(), 0,
+                        new int[2][4], 0, new ArrayList<Integer>());
+                this.inicializarMapas(mapa, 2);
+                this.a_asterisco();
+                camino.setText(caminoCorrecto);
+
             }
 
         }
