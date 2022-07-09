@@ -19,7 +19,7 @@ public class Ventana extends JFrame {
     public Ventana(Object mapaE, int id) throws FileNotFoundException {
         //Este codigo trae el camino absoluto hasta la carpet src y luego concatena la posicion del archivo
         String testPath = testFile.getAbsolutePath();
-        laberinto.llenarMapa(testPath.concat("\\Prueba1.txt"));
+        laberinto.llenarMapa(testPath.concat("\\src\\Prueba1.txt"));
 
         mapaI = (Mapa) mapaE;
         mapaI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
@@ -696,15 +696,287 @@ public class Ventana extends JFrame {
 
     }
 
-    public void procesarMovimientoAvaro() {
-        
+    public List<MapaA> procesarMovimientoA(MapaA hijo, MapaA padre, List<MapaA> cola) {
+        List<MapaA> auxCola = new ArrayList<MapaA>();
+        auxCola.addAll(cola);
+        int aux1 = hijo.getPosUltMov();
+        int aux2 = padre.getPosUltMov();
+        int aux3 = hijo.getFn();
+        int[][] auxLaberinto = laberinto.getLaberinto();
+        if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+            int fila = hijo.getMoviJugador().get(aux1)[0];
+            int columna = hijo.getMoviJugador().get(aux1)[1];
+            if (auxLaberinto[fila][columna] != 1) {
+                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    hijo.setAcumulado(aux3 + 1);
+                }
+                if (auxLaberinto[fila][columna] == 3 && hijo.getNaves()[0][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][0] == 0 || hijo.getNaves()[1][1] == 0) {
+
+                        hijo.setAcumulado(aux3 + 1);
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[0][0] = 1;
+                        aux[0][1] = 10;
+                        aux[0][2] = fila;
+                        aux[0][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 4 && hijo.getNaves()[1][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[0][0] == 0 || hijo.getNaves()[0][1] == 0) {
+                        hijo.setAcumulado(aux3 + 1);
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[1][0] = 2;
+                        aux[1][1] = 20;
+                        aux[1][2] = fila;
+                        aux[1][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 6) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        hijo.setAcumulado(aux3 + 1);
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        hijo.setAcumulado(aux3 + 1);
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] == 0 && hijo.getNaves()[0][1] == 0) {
+                        hijo.setAcumulado(aux3 + 4);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 5) {
+
+                    if (hijo.getContadorItems()[0][0] == 0) {
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getContadorItems();
+                        aux[0][0] = 1;
+                        aux[0][1] = fila;
+                        aux[0][2] = columna;
+                        hijo.setContadorItems(aux);
+                    } else {
+                        if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                (hijo.getContadorItems()[0][2] != columna)) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[1][0] = 2;
+                            aux[1][1] = fila;
+                            aux[1][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        }
+                    }
+
+                }
+                int[] posJugador = hijo.getMoviJugador().get(aux1);
+                int dA = Math.abs(posJugador[0] - laberinto.getPosItems().get(0)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(0)[1]);
+
+                int dB = Math.abs(posJugador[0] - laberinto.getPosItems().get(1)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(1)[1]);
+    
+                int[][] aux = hijo.getContadorItems();
+                if (aux[0][0] == 0 && aux[1][0] == 0) {
+
+                    int dOcercano = 0;
+                    if (dA < dB) {
+                        dOcercano = dA;
+                    } else {
+                        dOcercano = dB;
+                    }
+
+                    int dAB = Math.abs(laberinto.getPosItems().get(0)[0] - laberinto.getPosItems().get(1)[0])
+                            + Math.abs(laberinto.getPosItems().get(0)[1] - laberinto.getPosItems().get(1)[1]);
+                    hijo.setHeuristica(dOcercano + dAB);
+                    hijo.setFn();
+                }
+
+                auxCola.add(hijo);
+            }
+        }
+
+        return auxCola;
     }
 
-    public void busquedaAvara() throws CloneNotSupportedException{
-        MapaAvaro padre = (MapaAvaro) mapaI;
-        int distHeuristica = 0;
-        
+    public List<MapaAvaro> procesarMovimientoAvaro(MapaAvaro hijo, MapaAvaro padre, List<MapaAvaro> cola) {
+        List<MapaAvaro> auxCola = new ArrayList<MapaAvaro>();
+        auxCola.addAll(cola);
+        int aux1 = hijo.getPosUltMov();
+        int aux2 = padre.getPosUltMov();
+        int aux3 = hijo.getFn();
+        int[][] auxLaberinto = laberinto.getLaberinto();
+        if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+            int fila = hijo.getMoviJugador().get(aux1)[0];
+            int columna = hijo.getMoviJugador().get(aux1)[1];
+            if (auxLaberinto[fila][columna] != 1) {
+                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    hijo.setAcumulado(aux3 + 1);
+                }
+                if (auxLaberinto[fila][columna] == 3 && hijo.getNaves()[0][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][0] == 0 || hijo.getNaves()[1][1] == 0) {
+
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[0][0] = 1;
+                        aux[0][1] = 10;
+                        aux[0][2] = fila;
+                        aux[0][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 4 && hijo.getNaves()[1][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[0][0] == 0 || hijo.getNaves()[0][1] == 0) {
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[1][0] = 2;
+                        aux[1][1] = 20;
+                        aux[1][2] = fila;
+                        aux[1][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 6) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] == 0 && hijo.getNaves()[0][1] == 0) {
+                        hijo.setAcumulado(aux3 + 4);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 5) {
+
+                    if (hijo.getContadorItems()[0][0] == 0) {
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getContadorItems();
+                        aux[0][0] = 1;
+                        aux[0][1] = fila;
+                        aux[0][2] = columna;
+                        hijo.setContadorItems(aux);
+                    } else {
+                        if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                (hijo.getContadorItems()[0][2] != columna)) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[1][0] = 2;
+                            aux[1][1] = fila;
+                            aux[1][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        }
+                    }
+
+                }
+                int[] posJugador = hijo.getMoviJugador().get(aux1);
+                int dA = Math.abs(posJugador[0] - laberinto.getPosItems().get(0)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(0)[1]);
+
+                int dB = Math.abs(posJugador[0] - laberinto.getPosItems().get(1)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(1)[1]);
+    
+                int[][] aux = hijo.getContadorItems();
+                if (aux[0][0] == 0 && aux[1][0] == 0) {
+
+                    int dOcercano = 0;
+                    if (dA < dB) {
+                        dOcercano = dA;
+                    } else {
+                        dOcercano = dB;
+                    }
+
+                    int dAB = Math.abs(laberinto.getPosItems().get(0)[0] - laberinto.getPosItems().get(1)[0])
+                            + Math.abs(laberinto.getPosItems().get(0)[1] - laberinto.getPosItems().get(1)[1]);
+                    hijo.setHeuristica(dOcercano + dAB);
+                    hijo.setFn();
+                }
+
+                auxCola.add(hijo);
+            }
+        }
+
+        return auxCola;
     }
+
+
 
     public void paint(Graphics g) {
         super.paint(g);

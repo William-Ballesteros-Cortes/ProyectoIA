@@ -1,11 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Laberinto {
     private int[] posInicio;
     private int[][] laberinto = new int[10][10];
-    private int[] arregloPosiciones;
+    private List<int[]> posItems = new ArrayList<int[]>();
 
 
     public int[][] getLaberinto (){
@@ -16,34 +18,8 @@ public class Laberinto {
         return posInicio;
     }
 
-    public int[] getitemPosiciones() {
-        return arregloPosiciones;
-    }
-
-    public void itemPos(String path) throws FileNotFoundException{
-        arregloPosiciones = new int[2];
-        File doc = new File(path);
-        Scanner obj = new Scanner(doc);
-        int fila = 0;
-        while(obj.hasNextLine()) {
-            int columna = 0;
-            String aux = obj.nextLine();
-            String[] casillas = aux.split(" ");
-            for (String casilla : casillas) {
-                if (Integer.parseInt(casilla) == 5) {
-                    int[] aux2 = new int[4];
-                    int a = 0;
-                    int b = 1;
-                    aux2[a] = fila;
-                    aux2[b] = columna;
-                    arregloPosiciones = aux2;
-                    a = 2;
-                    b = 3;
-                }
-                columna++;
-            }
-            fila++;
-        }
+    public List<int[]> getPosItems(){
+        return posItems;
     }
 
     public void llenarMapa(String path) throws FileNotFoundException {
