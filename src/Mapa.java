@@ -142,6 +142,7 @@ public class Mapa implements Cloneable {
         int columna = mapaDerecha.getMoviJugador().get(ultiMov)[1];
         if (ultiMov == 0) {
             ultiMov = 1;
+            
         }
         if (columna != 9) {
             if ((mapaDerecha.getMoviJugador().get(ultiMov - 1)[1] != columna + 1) || (devolverse == true)) {
@@ -149,6 +150,7 @@ public class Mapa implements Cloneable {
                 mapaDerecha.agregarMovimiento(fila, columna + 1);
                 direccion.add("Derecha");
                 devolverse = false;
+                
 
             }
         }

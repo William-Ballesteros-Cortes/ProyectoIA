@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,11 +22,15 @@ public class Ventana extends JFrame implements ActionListener {
     Mapa mapaI;
     MapaCU mapaCUI;
     MapaA mapaAI;
+    MapaAvaro mapaAvarous;
     Laberinto laberinto = new Laberinto();
+    File testFile = new File("");
+    int cantMovsDerecha = 0;
 
     public Ventana() throws FileNotFoundException {
 
-        laberinto.llenarMapa("ProyectoIA/src/Prueba1.txt");
+        String testPath = testFile.getAbsolutePath();
+        laberinto.llenarMapa(testPath.concat("\\ProyectoIA\\src\\Pruebax3.txt"));
         initPanel();
         // initPanel2();
         initPantalla();
@@ -46,6 +51,10 @@ public class Ventana extends JFrame implements ActionListener {
                 mapaAI = (MapaA) mapaE;
                 mapaAI.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
                 break;
+            case 3:
+                mapaAvarous = (MapaAvaro) mapaE;
+                mapaAvarous.agregarMovimiento(laberinto.getPosInicio()[0], laberinto.getPosInicio()[1]);
+                System.out.println("Empieza avara");
         }
 
     }
@@ -105,6 +114,7 @@ public class Ventana extends JFrame implements ActionListener {
         int aux2 = padre.getPosUltMov();
         int aux3 = hijo.getAcumulado();
         int[][] auxLaberinto = laberinto.getLaberinto();
+        int cantMovs = 0;
         if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
             int fila = hijo.getMoviJugador().get(aux1)[0];
             int columna = hijo.getMoviJugador().get(aux1)[1];
@@ -894,6 +904,244 @@ public class Ventana extends JFrame implements ActionListener {
 
         return auxCola;
     }
+    public List<MapaAvaro> procesarMovimientoAvaro(MapaAvaro hijo, MapaAvaro padre, List<MapaAvaro> cola) {
+        
+        List<MapaAvaro> auxCola = new ArrayList<MapaAvaro>();
+        auxCola.addAll(cola);
+        int aux1 = hijo.getPosUltMov();
+        int aux2 = padre.getPosUltMov();
+        int aux3 = hijo.getAcumulado();
+        
+        
+        int[][] auxLaberinto = laberinto.getLaberinto();
+        if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
+            int fila = hijo.getMoviJugador().get(aux1)[0];
+            int columna = hijo.getMoviJugador().get(aux1)[1];
+            if (auxLaberinto[fila][columna] != 1) {
+                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                }
+                if (auxLaberinto[fila][columna] == 3 && hijo.getNaves()[0][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][0] == 0 || hijo.getNaves()[1][1] == 0) {
+
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[0][0] = 1;
+                        aux[0][1] = 10;
+                        aux[0][2] = fila;
+                        aux[0][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 4 && hijo.getNaves()[1][0] == 0) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[0][0] == 0 || hijo.getNaves()[0][1] == 0) {
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getNaves();
+                        aux[1][0] = 2;
+                        aux[1][1] = 20;
+                        aux[1][2] = fila;
+                        aux[1][3] = columna;
+                        hijo.setNaves(aux);
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 6) {
+                    if (hijo.getNaves()[0][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[0][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] > 0) {
+                        int[][] aux = hijo.getNaves();
+                        aux[1][1] -= 1;
+                        hijo.setNaves(aux);
+                    }
+                    if (hijo.getNaves()[1][1] == 0 && hijo.getNaves()[0][1] == 0) {
+                        //empty if????
+
+
+                    }
+                }
+
+                if (auxLaberinto[fila][columna] == 5) {
+
+                    if (hijo.getContadorItems()[0][0] == 0) {
+                        hijo.setDevolverse(true);
+                        int[][] aux = hijo.getContadorItems();
+                        aux[0][0] = 1;
+                        aux[0][1] = fila;
+                        aux[0][2] = columna;
+                        hijo.setContadorItems(aux);
+                    } else {
+                        if (hijo.getContadorItems()[1][0] == 0 && (hijo.getContadorItems()[0][1] != fila + 1) &&
+                                (hijo.getContadorItems()[0][2] != columna)) {
+                            hijo.setDevolverse(true);
+                            int[][] aux = hijo.getContadorItems();
+                            aux[1][0] = 2;
+                            aux[1][1] = fila;
+                            aux[1][2] = columna;
+
+                            hijo.setContadorItems(aux);
+                        }
+                    }
+
+                }
+                int[] posJugador = hijo.getMoviJugador().get(aux1);
+                int dA = Math.abs(posJugador[0] - laberinto.getPosItems().get(0)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(0)[1]);
+
+                int dB = Math.abs(posJugador[0] - laberinto.getPosItems().get(1)[0])
+                        + Math.abs(posJugador[1] - laberinto.getPosItems().get(1)[1]);
+
+                int[][] aux = hijo.getContadorItems();
+                
+                if (aux[0][0] == 0 && aux[1][0] == 0) {
+
+                    int dOcercano = 0;
+                    if (dA < dB) {
+                        dOcercano = dA;
+                    } else {
+                        dOcercano = dB;
+                    }
+                    
+
+                    int dAB = Math.abs(laberinto.getPosItems().get(0)[0] - laberinto.getPosItems().get(1)[0])
+                            + Math.abs(laberinto.getPosItems().get(0)[1] - laberinto.getPosItems().get(1)[1]);
+
+
+                    hijo.setHeuristica(dOcercano + dAB);
+                } else {
+                    if (aux[0][1] == laberinto.getPosItems().get(0)[0]
+                            && aux[0][2] == laberinto.getPosItems().get(0)[1]) {
+                        hijo.setHeuristica(dB);
+                    }
+                    if (aux[0][1] == laberinto.getPosItems().get(1)[0]
+                            && aux[0][2] == laberinto.getPosItems().get(1)[1]) {
+                        hijo.setHeuristica(dA);
+                    }
+                }
+                System.out.println("entra " + hijo.getAcumulado());
+                hijo.setFn();
+
+                auxCola.add(hijo);
+            }
+        }
+        return auxCola;
+    }
+
+    public void avaro() {
+        MapaAvaro padre = (MapaAvaro) mapaAvarous;
+        List<MapaAvaro> cola = new ArrayList<MapaAvaro>();
+        int posMenorFnFinal = 0;
+        cola.add(padre);
+
+        while (true) {
+            int posMenorFn = 0;
+            
+            int menorFn = cola.get(0).getFn();
+            
+
+            for (int x = 0; x < cola.size(); x++) {
+                if (cola.get(x).getFn() < menorFn) {
+                    posMenorFn = x;
+                    menorFn = cola.get(x).getFn();
+                }
+            }
+
+            padre = new MapaAvaro(cola.get(posMenorFn));
+
+            if (padre.ganar()) {
+                posMenorFnFinal = posMenorFn;
+                break;
+            }
+
+            // movimiento hacia la izquiera
+
+            MapaAvaro hijo = new MapaAvaro(padre);
+            hijo.moverIzquierda();
+
+            cola = procesarMovimientoAvaro(hijo, padre, cola);
+
+            // -------------------------------------------------------------------------------
+
+            // movimiento hacia la derecha
+            hijo = new MapaAvaro(padre);
+            hijo.moverDerecha();
+
+            cola = procesarMovimientoAvaro(hijo, padre, cola);
+
+            // -----------------------------------------------------------------------------
+
+            // movimiento hacia arriba
+            hijo = new MapaAvaro(padre);
+            hijo.moverArriba();
+
+            cola = procesarMovimientoAvaro(hijo, padre, cola);
+            // ----------------------------------------------------------------------------
+
+            // movimiento hacia abajo
+            hijo = new MapaAvaro(padre);
+            hijo.moverAbajo();
+
+            cola = procesarMovimientoAvaro(hijo, padre, cola);
+            // -----------------------------------------------------------------------------
+            cola.remove(posMenorFn);
+
+        }
+
+        System.out.println("Eureka");
+        caminoCorrecto = "Camino encontrado por A*:";
+        for (int[] posiciones : cola.get(posMenorFnFinal).getMoviJugador()) {
+            caminoCorrecto = caminoCorrecto + "\nFila: " + posiciones[0] + " Columna: " + posiciones[1];
+        }
+        
+        caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(posMenorFnFinal).getAcumulado();
+        caminoCorrecto = caminoCorrecto +
+                "\nNaves: " + cola.get(posMenorFnFinal).getNaves()[0][0] + " Combustible "
+                + cola.get(posMenorFnFinal).getNaves()[0][1] + " Fila: "
+                + cola.get(posMenorFnFinal).getNaves()[0][2]
+                + " Columna: " + cola.get(posMenorFnFinal).getNaves()[0][3];
+
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(posMenorFnFinal).getContadorItems()[0][0] + " Fila: "
+                + cola.get(posMenorFnFinal).getContadorItems()[0][1]
+                + " Columna: " + cola.get(posMenorFnFinal).getContadorItems()[0][2];
+        caminoCorrecto = caminoCorrecto +
+                "\nItems: " + cola.get(posMenorFnFinal).getContadorItems()[1][0] + " Fila: "
+                + cola.get(posMenorFnFinal).getContadorItems()[1][1]
+                + " Columna: " + cola.get(posMenorFnFinal).getContadorItems()[1][2];
+
+    }
 
     public void costoUniforme() throws CloneNotSupportedException {
         MapaCU padre = (MapaCU) mapaCUI;
@@ -960,6 +1208,10 @@ public class Ventana extends JFrame implements ActionListener {
 
         for (String moviString : cola.get(posMenorCostoFinal).getDireccion()) {
             System.out.println(" " + moviString);
+            if (moviString == "Derecha"){
+                cantMovsDerecha = cantMovsDerecha + 1;
+                System.out.println(cantMovsDerecha);
+            };
         }
         caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(posMenorCostoFinal).getAcumulado();
         caminoCorrecto = caminoCorrecto +
@@ -1121,6 +1373,16 @@ public class Ventana extends JFrame implements ActionListener {
                 this.a_asterisco();
                 camino.setText(caminoCorrecto);
 
+            }
+
+            if (metodo == "ÁVARA"){
+                System.out.println("Eureka");
+                camino.setText("");
+                MapaAvaro mapa = new MapaAvaro(new int[2][3], false, new ArrayList<int[]>(), new ArrayList<String>(), 0, new int[2][4], 0);
+                this.inicializarMapas(mapa, 3);
+                this.avaro();
+                camino.setText(caminoCorrecto);
+                System.out.println("Test");
             }
 
         }
