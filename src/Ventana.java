@@ -25,7 +25,7 @@ public class Ventana extends JFrame implements ActionListener {
 
     public Ventana() throws FileNotFoundException {
 
-        laberinto.llenarMapa("ProyectoIA/src/Prueba1.txt");
+        laberinto.llenarMapa("src/Prueba1.txt");
         initPanel();
         // initPanel2();
         initPantalla();
@@ -109,7 +109,7 @@ public class Ventana extends JFrame implements ActionListener {
             int fila = hijo.getMoviJugador().get(aux1)[0];
             int columna = hijo.getMoviJugador().get(aux1)[1];
             if (auxLaberinto[fila][columna] != 1) {
-                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5) {
+                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5 || auxLaberinto[fila][columna] == 2) {
                     if (hijo.getNaves()[0][1] > 0) {
                         int[][] aux = hijo.getNaves();
                         aux[0][1] -= 1;
@@ -210,7 +210,6 @@ public class Ventana extends JFrame implements ActionListener {
                     }
 
                 }
-                
 
                 auxCola.add(hijo);
             }
@@ -598,8 +597,7 @@ public class Ventana extends JFrame implements ActionListener {
 
     }
 
-
-    public void prueba(){
+    public void prueba() {
         MapaA padre = (MapaA) mapaAI;
         List<MapaA> cola = new ArrayList<MapaA>();
         cola.add(padre);
@@ -611,11 +609,9 @@ public class Ventana extends JFrame implements ActionListener {
 
         MapaA hijo2 = new MapaA(cola.get(1));
 
-        
         hijo2.moverDerecha();
 
         cola = procesarMovimientoA(hijo2, padre, cola);
-        
 
         MapaA hijo3 = new MapaA(cola.get(2));
 
@@ -649,6 +645,7 @@ public class Ventana extends JFrame implements ActionListener {
     }
 
 
+
     public void a_asterisco() {
         MapaA padre = (MapaA) mapaAI;
         List<MapaA> cola = new ArrayList<MapaA>();
@@ -657,9 +654,8 @@ public class Ventana extends JFrame implements ActionListener {
 
         while (true) {
             int posMenorFn = 0;
-            
+
             int menorFn = cola.get(0).getFn();
-            
 
             for (int x = 0; x < cola.size(); x++) {
                 if (cola.get(x).getFn() < menorFn) {
@@ -717,12 +713,18 @@ public class Ventana extends JFrame implements ActionListener {
         for (int fn : cola.get(posMenorFnFinal).getFnList()) {
             caminoCorrecto = caminoCorrecto + "\nFn: " + fn;
         }
-        
+
         caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(posMenorFnFinal).getAcumulado();
         caminoCorrecto = caminoCorrecto +
-                "\nNaves: " + cola.get(posMenorFnFinal).getNaves()[0][0] + " Combustible "
+                "\nNave 1: " + cola.get(posMenorFnFinal).getNaves()[0][0] + " Combustible "
                 + cola.get(posMenorFnFinal).getNaves()[0][1] + " Fila: "
                 + cola.get(posMenorFnFinal).getNaves()[0][2]
+                + " Columna: " + cola.get(posMenorFnFinal).getNaves()[0][3];
+
+        caminoCorrecto = caminoCorrecto +
+                "\nNave 2: " + cola.get(posMenorFnFinal).getNaves()[1][0] + " Combustible "
+                + cola.get(posMenorFnFinal).getNaves()[1][1] + " Fila: "
+                + cola.get(posMenorFnFinal).getNaves()[1][2]
                 + " Columna: " + cola.get(posMenorFnFinal).getNaves()[0][3];
 
         caminoCorrecto = caminoCorrecto +
@@ -737,20 +739,20 @@ public class Ventana extends JFrame implements ActionListener {
     }
 
     public List<MapaA> procesarMovimientoA(MapaA hijo, MapaA padre, List<MapaA> cola) {
-        
+
         List<MapaA> auxCola = new ArrayList<MapaA>();
         auxCola.addAll(cola);
         int aux1 = hijo.getPosUltMov();
         int aux2 = padre.getPosUltMov();
         int aux3 = hijo.getAcumulado();
-        
-        
+
         int[][] auxLaberinto = laberinto.getLaberinto();
         if (!hijo.getMoviJugador().get(aux1).equals(padre.getMoviJugador().get(aux2))) {
             int fila = hijo.getMoviJugador().get(aux1)[0];
             int columna = hijo.getMoviJugador().get(aux1)[1];
             if (auxLaberinto[fila][columna] != 1) {
-                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5) {
+                if (auxLaberinto[fila][columna] == 0 || auxLaberinto[fila][columna] == 5
+                        || auxLaberinto[fila][columna] == 2) {
                     if (hijo.getNaves()[0][1] > 0) {
                         int[][] aux = hijo.getNaves();
                         aux[0][1] -= 1;
@@ -770,6 +772,8 @@ public class Ventana extends JFrame implements ActionListener {
                         hijo.setNaves(aux);
                     }
                     if (hijo.getNaves()[1][1] > 0) {
+                        
+                        
                         int[][] aux = hijo.getNaves();
                         aux[1][1] -= 1;
                         hijo.setNaves(aux);
@@ -859,7 +863,7 @@ public class Ventana extends JFrame implements ActionListener {
                         + Math.abs(posJugador[1] - laberinto.getPosItems().get(1)[1]);
 
                 int[][] aux = hijo.getContadorItems();
-                
+
                 if (aux[0][0] == 0 && aux[1][0] == 0) {
 
                     int dOcercano = 0;
@@ -868,11 +872,9 @@ public class Ventana extends JFrame implements ActionListener {
                     } else {
                         dOcercano = dB;
                     }
-                    
 
                     int dAB = Math.abs(laberinto.getPosItems().get(0)[0] - laberinto.getPosItems().get(1)[0])
                             + Math.abs(laberinto.getPosItems().get(0)[1] - laberinto.getPosItems().get(1)[1]);
-
 
                     hijo.setHeuristica(dOcercano + dAB);
                 } else {
@@ -885,7 +887,6 @@ public class Ventana extends JFrame implements ActionListener {
                         hijo.setHeuristica(dA);
                     }
                 }
-                System.out.println("entra " + hijo.getAcumulado());
                 hijo.setFn();
 
                 auxCola.add(hijo);
@@ -963,9 +964,15 @@ public class Ventana extends JFrame implements ActionListener {
         }
         caminoCorrecto = caminoCorrecto + "\nPeso: " + cola.get(posMenorCostoFinal).getAcumulado();
         caminoCorrecto = caminoCorrecto +
-                "\nNaves: " + cola.get(posMenorCostoFinal).getNaves()[0][0] + " Combustible "
+                "\nNave 1: " + cola.get(posMenorCostoFinal).getNaves()[0][0] + " Combustible "
                 + cola.get(posMenorCostoFinal).getNaves()[0][1] + " Fila: "
                 + cola.get(posMenorCostoFinal).getNaves()[0][2]
+                + " Columna: " + cola.get(posMenorCostoFinal).getNaves()[0][3];
+
+        caminoCorrecto = caminoCorrecto +
+                "\nNave 2: " + cola.get(posMenorCostoFinal).getNaves()[1][0] + " Combustible "
+                + cola.get(posMenorCostoFinal).getNaves()[1][1] + " Fila: "
+                + cola.get(posMenorCostoFinal).getNaves()[1][2]
                 + " Columna: " + cola.get(posMenorCostoFinal).getNaves()[0][3];
 
         caminoCorrecto = caminoCorrecto +
